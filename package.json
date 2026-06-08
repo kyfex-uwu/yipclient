@@ -1,0 +1,20 @@
+{
+  "name": "yipclient",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "express": "^4.22.1"
+  },
+  "devDependencies": {
+    "@rexa-developer/tiks": "^0.2.0",
+    "arrowjs-aluminum": "^3.0.0",
+    "typescript": "^5.5.3"
+  },
+  "private": true,
+  "type": "module"
+}
