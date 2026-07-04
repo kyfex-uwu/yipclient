@@ -1,0 +1,234 @@
+export const RelationshipType = {
+    "dating":"Dating",
+    "domestic_partnership":"Domestic partnership",
+    "engaged_married":"Engaged / married",
+    "open_relationship":"In an open relationship",
+    "other":"Other",
+    "polyamorous":"Polyamorous",
+    "relationship":"In a relationship",
+    "single":"Single",
+}
+
+export type SocialMedias = "bluesky"|"deviantArt"|"discord"|"furAffinity"|"instagram"|"lastfm"|"mastodon"|"steam"|"telegram"|"twitter"|"twitterAd"|"vrChat";
+export const SocialMedia:{[k in SocialMedias]:string}={
+    "bluesky":"Bluesky",
+    "deviantArt":"DeviantArt",
+    "discord":"Discord",
+    "furAffinity":"FurAffinity",
+    "instagram":"Instagram",
+    "lastfm":"Lastfm",
+    "mastodon":"Mastodon",
+    "steam":"Steam",
+    "telegram":"Telegram",
+    "twitter":"Twitter",
+    "twitterAd":"Twitter (AD)",
+    "vrChat":"VRChat",
+}
+
+/*
+Friends="friends"
+Liked="liked"
+Mutuals="mutuals"
+Private="private"
+Public="public"
+Apple="apple"
+Email="email"
+Telegram="telegram"
+Invited="INVITED"
+Joined="JOINED"
+Left="LEFT"
+Controversial="controversial"
+Explicit="explicit"
+Hard="hard"
+Mature="mature"
+Safe="safe"
+Public="public"
+Supporter="supporter"
+SupporterDiamond="supporter_diamond"
+SupporterGold="supporter_gold"
+SupporterSilver="supporter_silver"
+SupporterVip="supporter_vip"
+Team="team"
+Friends="friends"
+Private="private"
+Public="public"
+Art="art"
+Fursuit="fursuit"
+Other="other"
+Person="person"
+Friend="friend"
+Liked="liked"
+LikedBy="likedBy"
+Mutual="mutual"
+Dating="dating"
+DomesticPartnership="domestic_partnership"
+EngagedMarried="engaged_married"
+OpenRelationship="open_relationship"
+Other="other"
+Polyamorous="polyamorous"
+Relationship="relationship"
+Single="single"
+Always="always"
+Mostly="mostly"
+Never="never"
+City="city"
+Country="country"
+Distance="distance"
+Region="region"
+Dominant="dominant"
+Submissive="submissive"
+Versatile="versatile"
+Bottom="bottom"
+Top="top"
+Asexual="asexual"
+Bisexual="bisexual"
+Gay="gay"
+Lesbian="lesbian"
+Other="other"
+Pansexual="pansexual"
+Questioning="questioning"
+Straight="straight"
+Bluesky="bluesky"
+DeviantArt="deviantArt"
+Discord="discord"
+FurAffinity="furAffinity"
+Instagram="instagram"
+Lastfm="lastfm"
+Mastodon="mastodon"
+Steam="steam"
+Telegram="telegram"
+Twitter="twitter"
+TwitterAd="twitterAd"
+VrChat="vrChat"
+City="city"
+Coarse="coarse"
+Exact="exact"
+ExtraCoarse="extraCoarse"
+Precise="precise"
+Gps="gps"
+Manual="manual"
+
+###
+
+[##.Top]:{label:"Top",subLabel:"I like to put things in others"},
+[o9.Bottom]:{label:"Bottom",subLabel:"I like to have things put in me"}
+
+[o4.Dominant]:"Dominant",
+    [o4.Versatile]:"Versatile",
+    [o4.Submissive]:"Submissive"
+
+    [o1.Always]:{label:"Always",subLabel:"I only do safe sex"},
+[o1.Mostly]:{label:"Mostly",subLabel:"Protection is discussed beforehand"},
+[o1.Never]:{label:"Never",subLabel:"I don't use protection"}
+
+["Female","Male","Transgender Female","Transgender Male","Non-Binary"]
+
+    [o0.Single]:"Single",
+    [o0.Relationship]:"In a relationship",
+    [o0.OpenRelationship]:"In an open Relationship",
+    [o0.EngagedMarried]:"Engaged / married",
+    [o0.DomesticPartnership]:"Domestic partnership",
+    [o0.Other]:"Other"
+
+    [o6.Straight]:"Straight",
+    [o6.Bisexual]:"Bisexual",
+    [o6.Gay]:"Gay",
+    [o6.Lesbian]:"Lesbian",
+    [o6.Pansexual]:"Pansexual",
+    [o6.Asexual]:"Asexual",
+    [o6.Questioning]:"Questioning",
+    [o6.Other]:"Other"
+
+###
+
+aa:"Afar",ab:"Abkhazian",af:"Afrikaans",ak:"Akan",am:"Amharic",an:"Aragonese",ar:"Arabic",as:"Assamese",av:"Avar",ay:"Aymara",az:"Azerbaijani",ba:"Bashkir",be:"Belarusian",bg:"Bulgarian",bh:"Bihari",bi:"Bislama",bm:"Bambara",bn:"Bengali",bo:"Tibetan",br:"Breton",bs:"Bosnian",ca:"Catalan",ce:"Chechen",ch:"Chamorro",co:"Corsican",cr:"Cree",cs:"Czech",cu:"Old Church Slavonic / Old Bulgarian",cv:"Chuvash",cy:"Welsh",da:"Danish",de:"German",dv:"Divehi",dz:"Dzongkha",ee:"Ewe",el:"Greek",en:"English",eo:"Esperanto",es:"Spanish",et:"Estonian",eu:"Basque",fa:"Persian",ff:"Peul",fi:"Finnish",fj:"Fijian",fo:"Faroese",fr:"French",fy:"West Frisian",ga:"Irish",gd:"Scottish Gaelic",gl:"Galician",gn:"Guarani",gu:"Gujarati",gv:"Manx",ha:"Hausa",he:"Hebrew",hi:"Hindi",ho:"Hiri Motu",hr:"Croatian",ht:"Haitian",hu:"Hungarian",hy:"Armenian",hz:"Herero",ia:"Interlingua",id:"Indonesian",ie:"Interlingue",ig:"Igbo",ii:"Sichuan Yi",ik:"Inupiak",io:"Ido",is:"Icelandic",it:"Italian",iu:"Inuktitut",ja:"Japanese",jv:"Javanese",ka:"Georgian",kg:"Kongo",ki:"Kikuyu",kj:"Kuanyama",kk:"Kazakh",kl:"Greenlandic",km:"Cambodian",kn:"Kannada",ko:"Korean",kr:"Kanuri",ks:"Kashmiri",ku:"Kurdish",kv:"Komi",kw:"Cornish",ky:"Kirghiz",la:"Latin",lb:"Luxembourgish",lg:"Ganda",li:"Limburgian",ln:"Lingala",lo:"Laotian",lt:"Lithuanian",lu:"Luba-Katanga",lv:"Latvian",mg:"Malagasy",mh:"Marshallese",mi:"Maori",mk:"Macedonian",ml:"Malayalam",mn:"Mongolian",mo:"Moldovan",mr:"Marathi",ms:"Malay",mt:"Maltese",my:"Burmese",na:"Nauruan",nb:"Norwegian Bokm\xe5l",nd:"North Ndebele",ne:"Nepali",ng:"Ndonga",nl:"Dutch",nn:"Norwegian Nynorsk",no:"Norwegian",nr:"South Ndebele",nv:"Navajo",ny:"Chichewa",oc:"Occitan",oj:"Ojibwa",om:"Oromo",or:"Oriya",os:"Ossetian / Ossetic",pa:"Panjabi / Punjabi",pi:"Pali",pl:"Polish",ps:"Pashto",pt:"Portuguese",qu:"Quechua",rm:"Raeto Romance",rn:"Kirundi",ro:"Romanian",ru:"Russian",rw:"Rwandi",sa:"Sanskrit",sc:"Sardinian",sd:"Sindhi",se:"Northern Sami",sg:"Sango",sh:"Serbo-Croatian",si:"Sinhalese",sk:"Slovak",sl:"Slovenian",sm:"Samoan",sn:"Shona",so:"Somalia",sq:"Albanian",sr:"Serbian",ss:"Swati",st:"Southern Sotho",su:"Sundanese",sv:"Swedish",sw:"Swahili",ta:"Tamil",te:"Telugu",tg:"Tajik",th:"Thai",ti:"Tigrinya",tk:"Turkmen",tl:"Tagalog / Filipino",tn:"Tswana",to:"Tonga",tr:"Turkish",ts:"Tsonga",tt:"Tatar",tw:"Twi",ty:"Tahitian",ug:"Uyghur",uk:"Ukrainian",ur:"Urdu",uz:"Uzbek",ve:"Venda",vi:"Vietnamese",vo:"Volap\xfck",wa:"Walloon",wo:"Wolof",xh:"Xhosa",yi:"Yiddish",yo:"Yoruba",za:"Zhuang",zh:"Chinese",zu:"Zulu"}
+
+###
+
+[oH.Friends]:"Friends
+oH.Liked]:"Liked by me
+oH.Mutuals]:"Mutuals
+oH.Private]:"No one
+oH.Public]:"Everyone"
+
+    [o_.Apple]:"Apple
+o_.Email]:"Email
+o_.Telegram]:"Telegram"
+
+    [oQ.Controversial]:"Controversial
+oQ.Explicit]:"Explicit
+oQ.Hard]:"Hard
+oQ.Mature]:"Mature
+oQ.Safe]:"Safe"
+
+    [oK.Friends]:"Friends
+oK.Private]:"Private
+oK.Public]:"Public"
+
+    [oJ.Art]:"Art
+oJ.Fursuit]:"Fursuits
+oJ.Other]:"Other
+oJ.Person]:"Persons"
+
+    [oX.Friend]:"Friend
+oX.Liked]:"You Liked
+oX.LikedBy]:"Like Back
+oX.Mutual]:"Mutual"
+
+    [o0.Dating]:"Dating
+o0.DomesticPartnership]:"Domestic partnership
+o0.EngagedMarried]:"Engaged / married
+o0.OpenRelationship]:"In an open relationship
+o0.Other]:"Other
+o0.Relationship]:"In a relationship
+o0.Single]:"Single"
+
+    [o1.Always]:"Always
+o1.Mostly]:"Mostly
+o1.Never]:"Never"
+
+    [o2.Distance]:"Distance
+o2.City]:"City
+o2.Region]:"Region
+o2.Country]:"Country"
+
+    [o4.Dominant]:"Dominant
+o4.Versatile]:"Versatile
+o4.Submissive]:"Submissive"
+
+    [o9.Top]:"Top
+o9.Bottom]:"Bottom"
+
+    [o6.Asexual]:"Ace
+o6.Bisexual]:"Bi
+o6.Gay]:"Gay
+o6.Lesbian]:"Lesbian
+o6.Other]:"Other
+o6.Pansexual]:"Pansexual
+o6.Questioning]:"Questioning
+o6.Straight]:"Straight"
+
+    [o8.DeviantArt]:"DeviantArt
+o8.Discord]:"Discord
+o8.FurAffinity]:"FurAffinity
+o8.Instagram]:"Instagram
+o8.Lastfm]:"Lastfm
+o8.Steam]:"Steam
+o8.Telegram]:"Telegram
+o8.Twitter]:"Twitter
+o8.TwitterAd]:"Twitter (AD)
+o8.VrChat]:"VRChat
+o8.Bluesky]:"Bluesky
+o8.Mastodon]:"Mastodon"
+
+    [o5.City]:"City
+o5.ExtraCoarse]:"Extra Coarse
+o5.Coarse]:"Coarse
+o5.Precise]:"Precise
+o5.Exact]:"Exact"
+
+    [o3.Gps]:"GPS
+o3.Manual]:"Manual"
+
+##
+ */
