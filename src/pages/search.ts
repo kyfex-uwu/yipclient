@@ -1,11 +1,10 @@
 import {html} from "@arrow-js/core";
-import {addCss, mainRouter} from "../index.js";
+import {addCss, mainRouter, self} from "../index.js";
 import {tiks} from '@rexa-developer/tiks';
-import {Func, request, VMarker} from "../apiReq.js";
-import Profile from "../types/profile/Profile.js";
 import {ref} from "arrowjs-aluminum";
 import {getImage} from "../utils.js";
 import icon from "../icon.js";
+import {ProfileRelationType, searchProfiles, SearchProfiles200EdgesItem} from "../api.js";
 
 addCss(`
 .profileList{
@@ -74,22 +73,24 @@ function formatDistance(distance:number, format:'imperial'|'metric'){
     return html`${distance} ${format==='imperial'?"mi":'km'}`
 }
 
-function profileButton(profile:Profile){
-    return html`<a class="profile" href="${`/fuzzbutt/${profile.uuid}`}"
+function profileButton(profile:SearchProfiles200EdgesItem){
+    return html`<a class="profile" href="${`/fuzzbutt/${profile.node.uuid}`}"
             @hover="${()=>tiks.hover()}"
             @click="${(e:PointerEvent)=> {
                 console.log(e)
                 tiks.click();
-                mainRouter.redirect(`/fuzzbutt/${profile.uuid}`)
+                mainRouter.redirect(`/fuzzbutt/${profile.node.uuid}`)
             }}">
-        ${profile.primaryImage ? getImage(profile.primaryImage, {canExpand:false}) : ''}
-        <div class="position">${formatDistance(profile.location.distance, 'imperial')}</div>
+        ${profile.node.primaryImage ? getImage(profile.node.primaryImage, {canExpand:false}) : ''}
+        ${profile.distance !== undefined ? html`
+            <div class="position">${formatDistance(profile.distance, 'imperial')}</div>
+        ` : ''}
         ${profile.relationType ? html`<div class="${`like-icon ${profile.relationType}`}">
             ${({
-                "friend":icon("friend"),
-                "liked":icon("liked"),
-                "likedBy":icon("likedBy"),
-                "mutual":icon("mutual"),
+                [ProfileRelationType.friend]:icon("friend"),
+                [ProfileRelationType.liked]:icon("liked"),
+                [ProfileRelationType.likedBy]:icon("likedBy"),
+                [ProfileRelationType.mutual]:icon("mutual"),
             })[profile.relationType]}
         </div>` : ''}
         ${/*<div class="travelling"></div>*/''}
@@ -97,7 +98,7 @@ function profileButton(profile:Profile){
 }
 
 export default (vars:{[p:string]:string}, state:{[k:string]:string})=>{
-    const searchData = ref<Profile[]|undefined>(undefined);
+    const searchData = ref<SearchProfiles200EdgesItem[]|undefined>(undefined);
 
     navigator.geolocation.getCurrentPosition((pos)=>{
         search(pos.coords.latitude, pos.coords.longitude);
@@ -105,84 +106,40 @@ export default (vars:{[p:string]:string}, state:{[k:string]:string})=>{
         search(0,0);
     });
     function search(x:number, y:number){
-        request(new Func<Profile>('profileSearch', {
-            filters: new VMarker('filters', 'ProfileSearchFiltersInput!', {
-                location:{
-                    latitude:x,
-                    longitude:y,
-                    type:'distance',//"distance"|"city"|"country"|"region"
-
-                    // distance:80,
-
-                },
-                // requireProfileImage:true,
-                // age:{
-                //     min:0,
-                //     max:0,
-                // },
-                // "genders": [
-                //     "Male",
-                //     "Transgender Female",
-                //     "Female",
-                //     "Transgender Male",
-                //     "Non-Binary"
-                // ],
-                // "relationshipStatus": [
-                //     "relationship",
-                //     "other",
-                //     "domestic_partnership",
-                //     "engaged_married",
-                //     "open_relationship",
-                //     "single"
-                // ],
-                // "sexPositions": [
-                //     "top",
-                //     "bottom"
-                // ],
-                // "sexualOrientation": [
-                //     "straight",
-                //     "bisexual",
-                //     "gay",
-                //     "lesbian",
-                //     "pansexual",
-                //     "asexual",
-                //     "questioning",
-                //     "other"
-                // ],
-            }),
-            isAd: new VMarker('isAd', 'Boolean', false),
-            cursor: new VMarker('cursor', 'String', ''),
-            limit: new VMarker('limit', 'Int', 30),
-            sort: 'distance'
-        }, {
-            uuid:true,
-            displayName:true,
-            primaryImage: {
-                uuid:true,
-                contentRating:true,
-                blurHash:true,
-                mimeType:true,
-            },
-            primaryImageAd: {
-                uuid:true,
-                contentRating:true,
-                blurHash:true,
-                mimeType:true,
-            },
-            username:true,
-            roles:true,
-            relationType:true,
+        searchProfiles({
+            // age?: {
+            //     max?: number
+            //     min?: number
+            // }
+            // displayName?: string
+            // eventIds?: number[]
+            // genders?: string[]
+            // groupIds?: number[]
+            // homeLocation?: {
+            //     placeId?: number
+            //     type?: SearchProfilesHomeLocationType
+            // }
+            // interests?: string[]
+            // isLocal?: boolean
+            // kinks?: string[]
             location: {
-                distance:true,
-                type:true,
-                place: {
-                    id:true,
-                },
-                homePlace: {
-                    id:true,
-                }
-            }
-        })).then(v=>searchData.value = v);
+                placeId:self.value?.profile.location?.place?.id,
+                type: "distance",
+            },
+            // lookingForPartner?: boolean
+            // maxMinutesSinceLastOnline?: number
+            // openRelationship?: boolean
+            // relationTypes?: ProfileRelationType[]
+            // relationshipStatuses?: string[]
+            // requireProfileImage?: boolean
+            // sexPositions?: SearchProfilesSexPositionsItem[]
+            // sexualOrientations?: string[]
+            // species?: string[]
+            // temporaryStatuses?: string[]
+            cursor: undefined,
+            // isAd?: boolean
+            pageSize: 30,
+        }).then(v=>searchData.value = v.data.edges);
     }
 
     return html`${()=>searchData.value === undefined ? '' : html`

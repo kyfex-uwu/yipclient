@@ -54,9 +54,24 @@ addCss(`
         mask-mode: luminance;
         mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='.2' d='M.5 1.2v1.5a.2.2 0 0 0 .2.2h2.6a.2.2 0 0 0 .2-.2V1.2a.2.2 0 0 0-.2-.2h-.6L2.5.5h-1l-.2.5H.7a.2.2 0 0 0-.2.2'/%3E%3Cellipse cx='2' cy='1.85' rx='.6' fill='%230000' stroke='%23fff' stroke-width='.2'/%3E%3C/svg%3E");
     }
+    &.search{
+        background: black;
+        mask-mode: luminance;
+        mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-width='.2' d='m.3 1.7.55-.55'/%3E%3Cellipse rx='.5' fill='none' stroke='%23fff' stroke-width='.2' cx='1.24' cy='.76'/%3E%3C/svg%3E");
+    }
+    &.settings{
+        background: black;
+        mask-mode: luminance;
+        mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cellipse rx='.45' cx='1' cy='1' fill='none' stroke='%23fff' stroke-width='.3'/%3E%3Cpath fill='%23fff' d='M.8.2h.4l.1.4H.7'/%3E%3Cpath fill='%23fff' d='m1.593.427.2.346-.297.287-.3-.52'/%3E%3Cpath fill='%23fff' d='m1.793 1.227-.2.346-.397-.113.3-.52'/%3E%3Cpath fill='%23fff' d='M1.2 1.8H.8l-.1-.4h.6'/%3E%3Cpath fill='%23fff' d='m.407 1.573-.2-.346L.504.94l.3.52'/%3E%3Cpath fill='%23fff' d='m.207.773.2-.346.397.113-.3.52'/%3E%3C/svg%3E");
+    }
+    &.notification{
+        background: black;
+        mask-mode: luminance;
+        mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23fff' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='.3' d='M.4 1.5h1.2'/%3E%3Cellipse fill='%23fff' rx='.15' cx='1' cy='.34'/%3E%3Cellipse fill='%23fff' rx='.15' cx='1' cy='1.65'/%3E%3Cpath fill='%23fff' d='M.45 1.5V.9a.5.5 180 0 1 1.1 0v.6'/%3E%3C/svg%3E");
+    }
 }
 `);
 
-type icon = "likedBy"|"liked"|"mutual"|"friend"|"send"|"boop"|"swipemore"|"camera"
+type icon = "likedBy"|"liked"|"mutual"|"friend"|"send"|"boop"|"swipemore"|"camera"|"search"|"settings"|"notification"
 const icon = (type:icon)=>html`<span class="${`icon ${type}`}"></span>`;
 export default icon;

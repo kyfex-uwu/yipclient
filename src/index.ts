@@ -7,11 +7,10 @@ import {getImage, imageModal, style} from "./utils.js";
 import login from "./pages/login.js";
 import chat from "./pages/chat.js";
 import {initWebsocket} from "./websocket.js";
-import {Collapsed, Func, refreshToken, request, token} from "./apiReq.js";
-import User from "./types/profile/user/User.js";
 import chatroom from "./pages/chatroom.js";
 import Listenable from "./Listenable.js";
-import ChatUpdate from "./types/chat/ws/ChatUpdate.js";
+import icon from "./icon.js";
+import {getCurrentUser, GetCurrentUser200} from "./api.js";
 
 //--
 
@@ -58,7 +57,9 @@ body{
     font-family: "Chiron GoRound TC", sans-serif;
     background:var(--black);
     color:var(--white);
-    min-height:100vh;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
     
     font-size:140%;
     
@@ -71,6 +72,83 @@ body{
         scrollbar-color:color-mix(var(--white), var(--black) 20%) var(--black);
         box-sizing:border-box;
         font-family: inherit;
+    }
+    
+    /**/
+    
+    & .header-bar{
+        font-size:2em;
+        --border-bottom: solid var(--white) 0.2em;
+        z-index: 1;
+        position: relative;
+        padding:0.2em;
+        background-color:color-mix(var(--white), transparent 80%);
+        
+        & a{
+            text-decoration: none;
+            border-radius: 0.8em;
+            color:var(--white);
+            padding: 0.1em 0.4em;
+            
+            transition:background-color 0.2s;
+            
+            &:hover{
+                background-color:color-mix(var(--white), transparent 80%);
+            }
+        }
+        
+        & div:has(.img){
+            display: flex;
+            float:right;
+            cursor:pointer;
+            
+            height: 1.19em;
+            border-radius:0.7em;
+            overflow:clip;
+            aspect-ratio:1/1;
+            margin-right:0.1em;
+            
+            & .img img{
+                width:100%;
+                height:100%;
+                object-fit:cover;
+                object-position:center center;
+            }
+            
+            transition: scale 0.2s;
+            &:hover{
+                scale: 1.2;
+            }
+        }
+        & .icon{
+            background-color:var(--white);
+        }
+    }
+    & .page{
+        flex:1;
+        overflow:scroll;
+    }
+    & .footer-bar{
+        font-size:2em;
+        background-color:color-mix(var(--white), var(--black) 80%);
+        padding:0.2em 0.5em;
+        display:flex;
+        
+        & > *{
+            flex:1;
+            text-align:center;
+            border-radius:1em;
+            margin: 0 0.1em;
+            
+            transition:background-color 0.2s;
+            &:hover{
+                background-color:color-mix(var(--white), transparent 80%);
+            }
+        }
+        
+        & .icon{
+            background-color:var(--white);
+        }
     }
 }
 
@@ -116,52 +194,6 @@ a{
     }
 }
 
-.header-bar{
-    font-size:2em;
-    --border-bottom: solid var(--white) 0.2em;
-    z-index: 1;
-    position: relative;
-    padding:0.2em;
-    background-color:color-mix(var(--white), transparent 80%);
-    
-    & a{
-        text-decoration: none;
-        border-radius: 0.8em;
-        color:var(--white);
-        padding: 0.1em 0.4em;
-        
-        transition:background-color 0.2s;
-        
-        &:hover{
-            background-color:color-mix(var(--white), transparent 80%);
-        }
-    }
-    
-    & div:has(.img){
-        display: flex;
-        float:right;
-        cursor:pointer;
-        
-        height: 1.19em;
-        border-radius:0.7em;
-        overflow:clip;
-        aspect-ratio:1/1;
-        margin-right:0.1em;
-        
-        & .img img{
-            width:100%;
-            height:100%;
-            object-fit:cover;
-            object-position:center center;
-        }
-        
-        transition: scale 0.2s;
-        &:hover{
-            scale: 1.2;
-        }
-    }
-}
-
 `);
 
 tiks.init({
@@ -169,59 +201,29 @@ tiks.init({
     volume: 0.3,
 });
 
-export const messageListener = new Listenable<Collapsed<ChatUpdate>>();
+export const messageListener = new Listenable<any>();//TODO
+export const self = ref<GetCurrentUser200|undefined>(undefined);
+export const notifications = ref<undefined>(undefined);
+export const token = ref<string|null>(window.localStorage.getItem("token"));
 
 const initing = new Promise<void>(async (r,reject)=>{
     // if(token.access_token === undefined) await refreshToken();
 
     try {
-        await request<{ user: User }>({
-            user: {
-                "isAdOptIn": true,
-                "isExplicitContentOptIn": true,
-                "isHardContentOptIn": true,
-                "isOnboarded": true,
-                "likeCount": true,
-                "mutualCount": true,
-                "activitySummary": {
-                    "unreadActivitiesCount": true,
-                    // "chatActivity": null,
-                },
-                blockedContent: {
-                    profiles: {
-                        "uuid": true,
-                        "displayName": true,
-                    },
-                    groups: {
-                        uuid: true,
-                        displayName: true
-                    }
-                },
-                profile: {
-                    uuid: true,
-                    id: true,
-                    displayName: true,
-                    username: true,
-                    isBirthday: true,
-                    // age: true,
-                    primaryImage: {
-                        uuid: true,
-                        contentRating: true,
-                        blurHash: true,
-                        mimeType: true,
-                    }
-                    // privacySettings: PrivacySettings
-                    // sonas: Sona[]
-                }
-            }
-        }).then(v => self.value = v.user);
+        await getCurrentUser().then(v => self.value = v.data);
     }catch(e){ reject(); }
     initWebsocket();
 
+    // request({
+    //     notifications:{
+    //         __typename:true
+    //     }
+    // }).then(r=>{
+    //     console.log("ae",r)
+    // })
+
     r();
 })
-
-export const self = ref<User|undefined>(undefined);
 
 export const pageLoadListener = new Listenable<void>();
 let mainRouter:PageAttachedRouter;
@@ -234,11 +236,15 @@ mainRouter = new PageAttachedRouter(document.getElementById("root")!,
         }
 
         return html`<div class="header-bar">
-            ${mainRouter.link('/yap')`Chat`}${
-            mainRouter.link('/')`Search`}<div @click="${()=>mainRouter.redirect(`/fuzzbutt/${self.value?.profile.uuid}`)}">${
-            self.value ? getImage(self.value.profile.primaryImage, {canExpand:false}) : ''}</div>
-        </div>${template}${imageModal}<div style="${
-            style({position:"fixed",bottom:"0", width:"100%","background-color":"red",padding:"0.5em",color:"white"})}">YipClient is in alpha! report bugs 
+            ${mainRouter.link('/settings')`${icon("settings")}`}
+            <span style="${style({float:"right"})}">${mainRouter.link('/notifications')`${icon("notification")}`}</span>
+        </div><div class="page">${template}</div><div class="footer-bar">
+            ${mainRouter.link('/yap')`${icon("send")}`}${
+            mainRouter.link('/')`${icon("search")}`}
+        </div>${imageModal}
+        
+        <div style="${
+            style({display:"none", position:"fixed",bottom:"0", width:"100%","background-color":"red",padding:"0.5em",color:"white"})}">YipClient is in alpha! report bugs 
             <span>${
             mainRouter.link("https://github.com/kyfex-uwu/yipclient/issues")`here`
         }</span></div>`;

@@ -1,9 +1,5 @@
-import {Collapsed, requestJson, token} from "./apiReq.js";
-import UUID from "./types/UUID.js";
-import ChatUpdate from "./types/chat/ws/ChatUpdate.js";
-import Subclass from "./types/Subclass.js";
 import Listenable from "./Listenable.js";
-import {primObj} from "./utils.js";
+import {primObj, UUID} from "./utils.js";
 import {messageListener} from "./index.js";
 
 let websocket:WebSocket;

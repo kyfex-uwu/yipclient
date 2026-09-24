@@ -1,5 +1,4 @@
 import {html} from "@arrow-js/core";
-import {Collapsed, Func, request, VMarker} from "../apiReq.js";
 import ChatRoomMessage from "../types/chat/ChatRoomMessage.js";
 import Subclass from "../types/Subclass.js";
 import {computed, ref} from "arrowjs-aluminum";
@@ -8,6 +7,7 @@ import {getImage, sanitize, style} from "../utils.js";
 import ChatRoom from "../types/chat/ChatRoom.js";
 import ChatRoomParticipant from "../types/chat/ChatRoomParticipant.js";
 import icon from "../icon.js";
+import {getChatRoom, listChatRoomMessages} from "../api.js";
 
 addCss(`
 #root:has(.chatroom-holder){
@@ -134,6 +134,10 @@ export default (vars:{[k:string]:string})=> {
     const otherUser = computed<Collapsed<ChatRoomParticipant>|undefined>(()=>
         roomData.value?.participants.find(p=>p.profile.uuid != self.value?.profile.uuid));
 
+    listChatRoomMessages(parseInt(vars.chatId),{
+        cursor:0,
+        pageSize: 30
+    })
     request(new Func<ChatRoomMessage>("chatRoomMessages", {
         limit: new VMarker('limit', 'Int', undefined),
         roomId: new VMarker('roomId', 'Int!', parseInt(vars.chatId)),

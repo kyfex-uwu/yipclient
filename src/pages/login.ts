@@ -1,8 +1,7 @@
 import {html} from "@arrow-js/core";
 import {style} from "../utils.js";
 import {ref} from "arrowjs-aluminum";
-import {setToken} from "../apiReq.js";
-import {addCss, mainRouter, self} from "../index.js";
+import {addCss, mainRouter, self, token} from "../index.js";
 
 addCss(`
 .login-box{
@@ -89,8 +88,9 @@ export default (v:{[k:string]:string}, s:{[k:string]:any})=>{
                             'content-type':'application/json'
                         }
                     }).then(r=>r.json()).then(r=> {
-                        setToken(r, Infinity);
-                        window.location="/";
+                        token.value=r;
+                        window.localStorage.setItem("token",r);
+                        window.location.assign("/");
                     })
                 }}">login</button>
                 

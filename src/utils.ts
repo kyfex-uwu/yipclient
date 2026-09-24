@@ -1,8 +1,8 @@
-import UploadedImage from "./types/UploadedImage.js";
 import {ArrowTemplate, html, reactive} from "@arrow-js/core";
 import {addCss} from "./index.js";
 import {decodeBlurHash} from "fast-blurhash";
 import {ref} from "arrowjs-aluminum";
+import {UploadedImageMinimalDto} from "./api.js";
 
 //--
 
@@ -60,7 +60,7 @@ addCss(`
     }
 }
 `);
-const iModalImage = reactive({img:undefined! as UploadedImage, active:false})
+const iModalImage = reactive<{img:undefined|UploadedImageMinimalDto,active:boolean}>({img:undefined, active:false})
 export const imageModal = html`<div class="${
     ()=>`image-modal${iModalImage.active ? ' active' : ''}`}" @click="${(e:PointerEvent)=>{
         if(!(e.target instanceof HTMLImageElement)) iModalImage.active=false;
@@ -74,19 +74,18 @@ export const imageModal = html`<div class="${
     })}) : ''}
 </div>`
 
-export function getImageLink(image:UploadedImage|null|undefined, data:{width?:number|false}={}){
+export function getImageLink(image:UploadedImageMinimalDto|null|undefined, data:{width?:number|false}={}){
+    console.log(image)
     if(!image) return '';
     return `https://assets.barq.app/image/${image.uuid}.${(image.mimeType??'image/jpeg').slice("image/".length)
         }${data.width!==false ? `?width=${data.width??512}` : ''}`;
 }
-export function openImage(image:UploadedImage|null|undefined){
+export function openImage(image:UploadedImageMinimalDto|null|undefined){
     if(!image) return;
-    //@ts-expect-error
-    iModalImage.img
-        = image;
+    iModalImage.img = image;
     iModalImage.active = true;
 }
-export function getImage(image:UploadedImage|null|undefined, data:{width?: number|false, style?:string|(()=>string), clazz?:string|(()=>string), canExpand?:boolean}={},
+export function getImage(image:UploadedImageMinimalDto|null|undefined, data:{width?: number|false, style?:string|(()=>string), clazz?:string|(()=>string), canExpand?:boolean}={},
                          insides?:ArrowTemplate){
 
     let canvas:HTMLCanvasElement|undefined=undefined;
@@ -123,6 +122,7 @@ export function sanitize(text:string){
 
 export type primitive = string | number | boolean | undefined | null
 export type primObj = {[k:string]:primitive|primObj|primitive[]|primObj[]}
+export type UUID = string;
 
 //--
 

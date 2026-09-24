@@ -14,6 +14,7 @@
     "@rexa-developer/tiks": "^0.3.0",
     "arrowjs-aluminum": "^3.1.0",
     "fast-blurhash": "^1.1.4",
+    "orval": "^8.35.0",
     "typescript": "^5.5.3"
   },
   "private": true,

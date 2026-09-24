@@ -1,13 +1,9 @@
 import {html, ArrowTemplate} from "@arrow-js/core";
-import {Func, request, VMarker} from "../apiReq.js";
-import Profile from "../types/profile/Profile.js";
 import {computed, ref} from "arrowjs-aluminum";
 import {getImage, openImage, requestFile, sanitize, style, textSvg} from "../utils.js";
 import {addCss, mainRouter, self} from "../index.js";
-import {SocialMedia} from "../enums.js";
-import ProfileSocialAccount from "../types/profile/ProfileSocialAccount.js";
 import icon from "../icon.js";
-import ChatRoom from "../types/chat/ChatRoom.js";
+import {getProfileDetail, GetProfileDetail200, likeProfile, setUserHeaderImage} from "../api.js";
 
 addCss(`
 .profile-page{
@@ -223,7 +219,7 @@ addCss(`
 
 export default (vars:{[k:string]:string}, state:{[k:string]:string})=>{
     //userId
-    const profileData = ref<Profile|undefined>(undefined);
+    const profileData = ref<GetProfileDetail200|undefined>(undefined);
     const relationOption = computed<[string, ArrowTemplate, ()=>void]|undefined>(()=>{
         switch(profileData.value?.relationType){
             case "friend": case "liked": return;
@@ -233,179 +229,34 @@ export default (vars:{[k:string]:string}, state:{[k:string]:string})=>{
         }
 
         return [(profileData.value?.relationType === "likedBy") ? "Like Back" : "Like", icon("liked"), ()=>{
-            request(new Func('likeProfile', {
-                uuid:new VMarker('uuid', 'String!', profileData.value?.uuid)
-            },{
-                likeProfile:true
-            }), {type:"mutation"});
+            likeProfile(profileData.value!.profile.uuid);
         }];
 
     });
-    const isSelf = computed(()=>profileData.value?.uuid === self.value?.profile?.uuid);
+    const isSelf = computed(()=>profileData.value?.profile.uuid === self.value?.profile?.uuid);
 
-    request<{ profile:Profile }>({profile:{
-        uuid:new VMarker('uuid', 'String!', vars.userId),
-
-        id: true,
-        displayName: true,
-        username: true,
-        relationType: true,
-        isAdOptIn: true,
-        isBirthday: true,
-        age: true,
-        primaryImage: {
-            uuid: true,
-            contentRating: true,
-            width: true,
-            height: true,
-            blurHash: true,
-            mimeType:true,
-        },
-        primaryImageAd: {
-            uuid: true,
-            contentRating: true,
-            width: true,
-            height: true,
-            blurHash: true,
-            mimeType:true,
-        },
-        headerImage: {
-            uuid: true,
-            contentRating: true,
-            width: true,
-            height: true,
-            blurHash: true,
-            mimeType:true,
-        },
-        headerImageAd: {
-            uuid: true,
-            contentRating: true,
-            width: true,
-            height: true,
-            blurHash: true,
-            mimeType:true,
-        },
-        privacySettings: {
-            startChat: true,
-            viewKinks: true,
-            viewAge: true,
-            viewAd: true,
-            viewProfile: true,
-            showLastOnline: true,
-        },
-        images: {
-            image: {
-                uuid: true,
-                contentRating: true,
-                width: true,
-                height: true,
-                blurHash: true,
-                mimeType: true,
-            },
-            accessPermission: true,
-            isAd: true,
-            likeCount: true,
-            hasLiked: true,
-        },
-        location: {
-            type: true,
-            homePlace: {
-                id: true,
-                place: true,
-                region: true,
-                country: true,
-                countryCode: true,
-                longitude: true,
-                latitude: true,
-            },
-            place: {
-                id: true,
-                place: true,
-                region: true,
-                country: true,
-                countryCode: true,
-                longitude: true,
-                latitude: true,
-            },
-            distance: true,
-        },
-        bio: {
-            "biography": true,
-            "genders": true,
-            "languages": true,
-            "relationshipStatus": true,
-            "sexualOrientation": true,
-            "interests": true,
-            "hobbies": {
-                interest: true,
-            }
-        },
-        socialAccounts: {
-            id: true,
-            socialNetwork: true,
-            isVerified: true,
-            url: true,
-            displayName: true,
-            value: true,
-            accessPermission: true,
-        },
-        bioAd: {
-            biography: true,
-            sexPositions: true,
-            behaviour: true,
-            safeSex: true,
-            canHost: true,
-        },
-        sonas: {
-
-        },
-        kinks: {
-
-        },
-        groups: {
-
-        },
-        events: {
-
-        },
-        roles: true,
-        shareHash: true,
-
-    }}).then(json=> profileData.value = json.profile);
+    getProfileDetail(vars.userId).then(r=> profileData.value = r.data);
 
     return html`${()=>profileData.value === undefined ? 'Loading' : html`
     <div class="profile-page">
         <div class="header-image" @click="${()=> {
-            openImage(profileData.value?.headerImage);
-            if(isSelf.value && !profileData.value?.headerImage){
+            openImage(profileData.value?.profile.headerImage);
+            if(isSelf.value && !profileData.value?.profile.headerImage){
                 requestFile("image/*").then(file=>{
                     const a = new FileReader();
                     a.onload = e=>{
-                        request(new Func<Profile>('userSetHeaderImage',{
-                            image:new VMarker('image', 'String', e.target!.result),
-                        },{
-                            headerImage:{
-                                uuid: true,
-                                contentRating:true,
-                                width: true,
-                                height: true,
-                                blurHash: true,
-                                type: true,
-                                mimeType: true,
-                                fileName: true,
-                                fileSize: true,
-                                fileHash: true,
-                            },
-                            __typename:true,
-                        }), {type:"mutation"});
+                        setUserHeaderImage({
+                            image:e.target!.result,
+                            isAd:false,
+                        })
                     }
                     a.readAsDataURL(file);
                 })
             }
         }}">
-            ${getImage(profileData.value.headerImage, 
+            ${getImage(profileData.value.profile.headerImage, 
                 {style:style({position:"absolute", width:'100%', top:'50%', transform:"translateY(-50%)"}), canExpand:false},
-            (isSelf.value && !profileData.value.headerImage) ? html`${icon('camera')}` : undefined)}
+            (isSelf.value && !profileData.value.profile.headerImage) ? html`${icon('camera')}` : undefined)}
         </div>
         <div style="${style({"position":"relative", top:"-4em", padding:"1em"})}" class="passthrough-children">
             <div style="${style({display:"grid", "grid-template-columns":"2fr 1fr", "gap":"0 1.5em"})}" class="passthrough-children">
@@ -413,7 +264,7 @@ export default (vars:{[k:string]:string}, state:{[k:string]:string})=>{
                     <div style="${style({flex:"1"})}" class="passthrough-children"></div>
                     <div>
                         <div style="${style({"font-size":"1.5em", display:"flex"})}">
-                            ${textSvg(profileData.value.displayName,{
+                            ${textSvg(profileData.value.profile.displayName,{
                                 clazz:"profile-name"
                             })}
                             <div>
@@ -426,25 +277,27 @@ export default (vars:{[k:string]:string}, state:{[k:string]:string})=>{
                                 })[profileData.value.relationType]}</div>` : ''}
                             </div>
                         </div>
-                        <div style="${style({"font-size":"1.1em"})}">${profileData.value.username === null ? '' :
-                                html`<span style="${style({opacity:'0.6'})}">@${profileData.value.username}</span>`}</div>
+                        <div style="${style({"font-size":"1.1em"})}">${profileData.value.profile.username === null ? '' :
+                                html`<span style="${style({opacity:'0.6'})}">@${profileData.value.profile.username}</span>`}</div>
                     </div>
                 </div>
                 <div class="profile-main-image">
-                    ${profileData.value.primaryImage ?
-                        getImage(profileData.value.primaryImage) :
+                    ${profileData.value.profile.primaryImage ?
+                        getImage(profileData.value.profile.primaryImage) :
                         ""}
                 </div>
                 <div style="${style({"font-size":"0.7em", "margin-top":"0.5em"})}">
                     <div>${[
-                        profileData.value.age,
-                        profileData.value.bio.genders?.join("/"),
-                        profileData.value.bio.sexualOrientation,
-                        profileData.value.bio.relationshipStatus
+                        profileData.value.profile.age,
+                        profileData.value.profile.bio?.genders?.join("/"),
+                        profileData.value.profile.bio?.sexualOrientation,
+                        profileData.value.profile.bio?.relationshipStatus
                     ].filter(v=>v).join(" - ")}</div>
-                        <div>${profileData.value.location.place.place}, ${profileData.value.location.place.region}</div>
+                        ${profileData.value.profile.location?.place ? html`
+                        <div>${profileData.value.profile.location.place.place}, ${profileData.value.profile.location.place.region}</div>
+                        `:''}
                 </div>
-                <div class="interaction-menu" style="${profileData.value.uuid === self.value?.profile?.uuid ? 'display:none' : ''}">
+                <div class="interaction-menu" style="${profileData.value.profile.uuid === self.value?.profile?.uuid ? 'display:none' : ''}">
                     <div>
                         ${([
                             ["Boop", icon("boop"), ()=>{
