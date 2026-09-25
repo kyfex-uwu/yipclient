@@ -125,6 +125,7 @@ export default (vars:{[p:string]:string}, state:{[k:string]:string})=>{
             location: {
                 placeId:self.value?.profile.location?.place?.id,
                 type: "distance",
+                distance: 10,
             },
             // lookingForPartner?: boolean
             // maxMinutesSinceLastOnline?: number
@@ -138,7 +139,7 @@ export default (vars:{[p:string]:string}, state:{[k:string]:string})=>{
             // temporaryStatuses?: string[]
             cursor: undefined,
             // isAd?: boolean
-            pageSize: 30,
+            pageSize: 21,
         }).then(v=>searchData.value = v.data.edges);
     }
 

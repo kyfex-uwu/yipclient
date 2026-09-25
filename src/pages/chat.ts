@@ -2,16 +2,17 @@ import {html} from "@arrow-js/core";
 import {ref} from "arrowjs-aluminum";
 import {addCss, mainRouter, self} from "../index.js";
 import {getImage, sanitize} from "../utils.js";
+import {ListChatRoomMessages200EdgesItem, listChatRooms, ListChatRooms200, ListChatRooms200EdgesItem} from "../api.js";
 
 addCss(`
 .chat-holder{
     & .room {    
         margin: 0.3em;
-        border: solid var(--white) 1px;
         padding: 0.3em 1em 0.3em 0.3em;
         border-radius: 1em;
         display:flex;
         cursor:pointer;
+        background-color:color-mix(in srgb, var(--white), transparent 80%);
         
         transition:scale 0.2s;
         &:hover{
@@ -50,64 +51,20 @@ addCss(`
 `);
 
 export default (vars:{[k:string]:string})=>{
-    const chatRooms = ref<Collapsed<ChatRoom>[]>([]);
+    const chatRooms = ref<ListChatRooms200EdgesItem[]|undefined>(undefined);
 
-    request(new Func<ChatRoom>('chatRooms', {
-        limit: new VMarker('limit', 'Int', undefined),
-        offset: new VMarker('offset', 'Int', undefined),
-        status: new VMarker('status', 'ChatRoomJoinStatus', undefined),
-    }, {
-        image:{
-            uuid: true,
-            contentRating: true,
-            blurHash: true,
-            mimeType: true,
-        },
-        isArchived: true,
-        isRemoved: true,
-        lastReadSeqId: true,
-        lastSeqId: true,
-        participants: {
-            profile:{
-                uuid: true,
-                displayName: true,
-                username: true,
-                primaryImage: {
-                    uuid: true,
-                    contentRating: true,
-                    blurHash: true,
-                    mimeType: true,
-                }
-            }
-        },
-        status: true,
-        title: true,
-        type: true,
-        id: true,
-        lastMessage: {
-            payload:{
-                type:true,
-
-                ChatRoomMessagePayloadText: new Subclass({
-                    content: true
-                }),
-                ChatRoomMessagePayloadSystem: new Subclass({
-                    action: true
-                })
-            }
-        },
-        lastMessageAt: true,
-    })).then(v=>chatRooms.value=v);
+    listChatRooms({}).then(v=>chatRooms.value=v.data.edges);
 
     return html`<div class="chat-holder">
-        ${()=>chatRooms.value.map(v=>html`
+        ${()=>chatRooms.value?.map(v=>html`
         <div class="room" @click="${()=>{
-            mainRouter.redirect(`/yap/${v.id}`)
+            mainRouter.redirect(`/yap/${v.node.id}`)
         }}">
-            <div>${getImage(v.participants.find(p=>p.profile.uuid != self.value?.profile.uuid)?.profile.primaryImage, {canExpand:false})}</div>
+            <div>${getImage(v.node.participants.find(p=>p.profile?.uuid !== undefined &&
+                    p.profile.uuid !== self.value?.profile.uuid)?.profile?.primaryImage, {canExpand:false})}</div>
             <div class="text">
-                <div>${sanitize(v.title)}</div>
-                <div>${sanitize(v.lastMessage?.payload.content ?? '')}</div>
+                <div>${sanitize(v.node.title)}</div>
+                <div>${sanitize(v.node.lastMessage?.payload?.content ?? '')}</div>
             </div>
         </div>`)}
     </div>`

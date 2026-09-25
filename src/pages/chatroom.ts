@@ -7,7 +7,13 @@ import {getImage, sanitize, style} from "../utils.js";
 import ChatRoom from "../types/chat/ChatRoom.js";
 import ChatRoomParticipant from "../types/chat/ChatRoomParticipant.js";
 import icon from "../icon.js";
-import {getChatRoom, listChatRoomMessages} from "../api.js";
+import {
+    ChatParticipantDto,
+    ChatRoomDto,
+    getChatRoom,
+    listChatRoomMessages,
+    ListChatRoomMessages200EdgesItem, sendChatRoomMessage
+} from "../api.js";
 
 addCss(`
 #root:has(.chatroom-holder){
@@ -71,6 +77,9 @@ addCss(`
         &.you .message{
             float:right;
             border-radius: 1em var(--border-top) var(--border-bottom) 1em;
+            background-color:var(--primary);
+            color:var(--black);
+            border: solid transparent 1px;
         }
     }
     
@@ -81,6 +90,10 @@ addCss(`
     & .message-holder.you:has(+ .message-holder.you),
     & .message-holder:not(.you):has(+ .message-holder:not(.you)) {
         --border-top:0.2em;
+    }
+    & .message-holder.you + .message-holder:not(.you),
+    & .message-holder:not(.you) + .message-holder.you{
+        margin-bottom:1em;
     }
 
 }
@@ -129,38 +142,16 @@ addCss(`
 `)
 
 export default (vars:{[k:string]:string})=> {
-    const messages=ref<Collapsed<ChatRoomMessage>[]|undefined>(undefined);
-    const roomData = ref<Collapsed<ChatRoom>|undefined>(undefined);
-    const otherUser = computed<Collapsed<ChatRoomParticipant>|undefined>(()=>
-        roomData.value?.participants.find(p=>p.profile.uuid != self.value?.profile.uuid));
+    const messages=ref<ListChatRoomMessages200EdgesItem[]|undefined>(undefined);
+    const roomData = ref<ChatRoomDto|undefined>(undefined);
+    const otherUser = computed<ChatParticipantDto|undefined>(()=>
+        roomData.value?.participants.find(p=>p.profile?.uuid!==undefined && p.profile.uuid !== self.value?.profile.uuid));
 
     listChatRoomMessages(parseInt(vars.chatId),{
-        cursor:0,
+        // cursor:0,
         pageSize: 30
-    })
-    request(new Func<ChatRoomMessage>("chatRoomMessages", {
-        limit: new VMarker('limit', 'Int', undefined),
-        roomId: new VMarker('roomId', 'Int!', parseInt(vars.chatId)),
-        cursor: new VMarker('cursor', 'Int', undefined),
-    }, {
-        "seqId": true,
-        profile:{
-            id:true,
-        },
-        "createdAt": true,
-        "updatedAt": true,
-        "deletedAt": true,
-        "payload": {
-            type:true,
-            ChatRoomMessagePayloadText: new Subclass({
-                content:true,
-            }),
-            ChatRoomMessagePayloadSystem: new Subclass({
-                action:true
-            }),
-        },
-    })).then(v=> {
-        messages.value = v;
+    }).then(v=> {
+        messages.value = v.data.edges;
 
         messageListener.listen((update)=>{
             switch(update.__typename){
@@ -171,102 +162,42 @@ export default (vars:{[k:string]:string})=> {
             }
         }, true)
     });
-    request(new Func<ChatRoom>('chatRoom',{
-        roomId:new VMarker('roomId','Int!',parseInt(vars.chatId))
-    },{
-        image:{
-            uuid: true,
-            contentRating: true,
-            blurHash: true,
-            mimeType: true,
-        },
-        isArchived: true,
-        isRemoved: true,
-        lastReadSeqId: true,
-        lastSeqId: true,
-        participants: {
-            profile:{
-                uuid: true,
-                displayName: true,
-                username: true,
-                primaryImage: {
-                    uuid: true,
-                    contentRating: true,
-                    blurHash: true,
-                    mimeType: true,
-                }
-            }
-        },
-        status: true,
-        title: true,
-        type: true,
-        id: true,
-        lastMessage: {
-            payload:{
-                type:true,
-
-                ChatRoomMessagePayloadText: new Subclass({
-                    content: true
-                }),
-                ChatRoomMessagePayloadSystem: new Subclass({
-                    action: true
-                })
-            }
-        },
-        lastMessageAt: true,
-    })).then(v=>roomData.value=v[0]);
+    getChatRoom(parseInt(vars.chatId)).then(v=>roomData.value=v.data);
 
     function sendMessage(textarea:HTMLTextAreaElement, event:Event){
-        request(new Func<ChatRoomMessage>('chatRoomMessageSend', {
-            //roomId: $roomId, message: $message
-            roomId:new VMarker('roomId', 'Int!', parseInt(vars.chatId)),
-            message: new VMarker('message', 'ChatRoomMessageInput!', {
-                content:textarea.value
-            })
-        }, {
-            seqId:true,
-            // createdAt
-            // updatedAt
-            // deletedAt
-            profile: {
-                id:true
-            },
-            payload: {
-                type:true,
-                ChatRoomMessagePayloadText: new Subclass({
-                    content:true,
-                }),
-                ChatRoomMessagePayloadSystem: new Subclass({
-                    action:true
-                }),
-            }
-        }, false), {type:"mutation"})
+        sendChatRoomMessage(parseInt(vars.chatId),{
+            content:textarea.value,
+            //TODO:replies??
+        });
 
         textarea.value="";
         event.preventDefault();
     }
 
     return html`<div class="chatroom-header" @click="${()=>{
-        if(roomData.value!==undefined)
-            mainRouter.redirect(`/fuzzbutt/${otherUser.value?.profile.uuid}`);
+        if(otherUser.value?.profile?.uuid!==undefined)
+            mainRouter.redirect(`/fuzzbutt/${otherUser.value?.profile?.uuid}`);
     }}">${()=>roomData.value===undefined?'':html`
-        <div>${getImage(otherUser.value?.profile.primaryImage, {canExpand:false})}</div>
+        <div>${getImage(otherUser.value?.profile?.primaryImage, {canExpand:false})}</div>
         <div><div>${roomData.value?.title}</div></div>
     `}
     </div>
     <div class="chatroom-holder">
         ${()=>messages.value===undefined?'':html`
             ${()=>messages.value?.map(message=>html`
-                <div class="${`message-holder ${message.profile.id == self.value?.profile.id ? 'you' : ''}`}"><div class="message">
-                    ${sanitize(message.payload.type==="text" ? message.payload.content : message.payload.action,{newlineToBr:true})}
+                <div class="${`message-holder ${message.node.profile?.id == self.value?.profile.id ? 'you' : ''}`}"><div class="message">
+                    ${sanitize((message.node.payload?.type==="text" ? message.node.payload.content : message.node.payload?.action) ?? "",{newlineToBr:true})}
                 </div></div>
             `)}
         `}
     </div>
     <div class="chatroom-input">
-        <textarea @keypress="${(e:KeyboardEvent)=> {
-            if(e.code === "Enter" && !e.shiftKey) sendMessage(e.target!, e)
-        }}" enterkeyhint="send"></textarea>
+        ${/*
+             @keypress="${(e:KeyboardEvent)=> {
+                if(e.code === "Enter" && !e.shiftKey) sendMessage(e.target!, e)
+            }}" enterkeyhint="send"
+        */""}
+        <textarea></textarea>
         <span @click="${(e:PointerEvent)=> {
             let el = e.target!;
             while(el.nodeName !== "DIV")
