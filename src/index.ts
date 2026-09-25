@@ -202,9 +202,8 @@ export const token = ref<string|null>(window.localStorage.getItem("token"));
 const initing = new Promise<void>(async (r,reject)=>{
     // if(token.access_token === undefined) await refreshToken();
 
-    try {
-        await getCurrentUser().then(v => self.value = v.data);
-    }catch(e){ reject(); }
+    await getCurrentUser().then(v => self.value = v.data)
+        .catch(reject);
     initWebsocket();
 
     // request({

@@ -33,11 +33,14 @@ export const fetchWithAuth = async <T extends {
         headers:{...headers, "Authorization":`Bearer ${token.value}`},
     });
 
-    return response.json().then(json=>{return{
-        data:json,
-        status:response.status,
-        headers:{...headers, "Authorization":`Bearer ${token.value}`}
-    }});
+    const toReturn = response.json();
+    if(response.ok)
+        return toReturn.then(json=>{return{
+            data:json,
+            status:response.status,
+            headers:{...headers, "Authorization":`Bearer ${token.value}`}
+        }});
+    else throw toReturn;
 };
 
 export default fetchWithAuth;
