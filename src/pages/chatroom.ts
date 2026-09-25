@@ -1,11 +1,7 @@
 import {html} from "@arrow-js/core";
-import ChatRoomMessage from "../types/chat/ChatRoomMessage.js";
-import Subclass from "../types/Subclass.js";
 import {computed, ref} from "arrowjs-aluminum";
 import {addCss, mainRouter, messageListener, self} from "../index.js";
 import {getImage, sanitize, style} from "../utils.js";
-import ChatRoom from "../types/chat/ChatRoom.js";
-import ChatRoomParticipant from "../types/chat/ChatRoomParticipant.js";
 import icon from "../icon.js";
 import {
     ChatParticipantDto,
@@ -20,6 +16,11 @@ addCss(`
     max-height:100vh;
     display:flex;
     flex-direction:column;
+    
+    & .page{
+        display:flex;
+        flex-direction:column;
+    }
 }
 
 .chatroom-header{

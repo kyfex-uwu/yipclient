@@ -2,7 +2,7 @@ import {html} from "@arrow-js/core";
 import {ref} from "arrowjs-aluminum";
 import {addCss, mainRouter, self} from "../index.js";
 import {getImage, sanitize} from "../utils.js";
-import {ListChatRoomMessages200EdgesItem, listChatRooms, ListChatRooms200, ListChatRooms200EdgesItem} from "../api.js";
+import {listChatRooms, ListChatRooms200EdgesItem} from "../api.js";
 
 addCss(`
 .chat-holder{

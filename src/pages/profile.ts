@@ -132,7 +132,6 @@ addCss(`
         border-radius: 0 0 0.6em 0.6em;
         color:var(--black);
         
-        
         &::before{
             content:'';
             background-color: var(--primary);
@@ -206,6 +205,7 @@ addCss(`
                     
                     & > div{
                         display:unset;
+                        font-size:0.8em;
                     }
                     & > .icon{
                         margin-right:0.4em;
@@ -301,7 +301,7 @@ export default (vars:{[k:string]:string}, state:{[k:string]:string})=>{
             {style:style({position:"absolute", width:'100%', top:'50%', transform:"translateY(-50%)"}), canExpand:false},
             (isSelf.value && !profileData.value?.profile.headerImage) ? html`${icon('camera')}` : undefined)}
         </div>
-        <div style="${style({"position":"relative", top:"-4em", padding:"1em"})}" class="passthrough-children">
+        <div style="${style({"position":"relative", top:"-3em", padding:"1em"})}" class="passthrough-children">
             <div style="${style({display:"grid", "grid-template-columns":"2fr 1fr auto", "gap":"0 1.5em"})}" class="passthrough-children">
                 <div style="${style({display:"flex","flex-direction":"column"})}" class="passthrough-children">
                     <div style="${style({flex:"1"})}" class="passthrough-children"></div>

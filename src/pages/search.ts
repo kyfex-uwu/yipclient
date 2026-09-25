@@ -74,27 +74,26 @@ function formatDistance(distance:number, format:'imperial'|'metric'){
 }
 
 function profileButton(profile:SearchProfiles200EdgesItem){
-    return html`<a class="profile" href="${`/fuzzbutt/${profile.node.uuid}`}"
-            @hover="${()=>tiks.hover()}"
-            @click="${(e:PointerEvent)=> {
-                console.log(e)
-                tiks.click();
-                mainRouter.redirect(`/fuzzbutt/${profile.node.uuid}`)
-            }}">
+    return html`${mainRouter.link(`/fuzzbutt/${profile.node.uuid}`, {
+        class:"profile",
+        "@hover":()=>tiks.hover(),
+        "@click":()=> {
+            tiks.click();
+        },
+    })`
         ${profile.node.primaryImage ? getImage(profile.node.primaryImage, {canExpand:false}) : ''}
         ${profile.distance !== undefined ? html`
             <div class="position">${formatDistance(profile.distance, 'imperial')}</div>
         ` : ''}
         ${profile.relationType ? html`<div class="${`like-icon ${profile.relationType}`}">
             ${({
-                [ProfileRelationType.friend]:icon("friend"),
-                [ProfileRelationType.liked]:icon("liked"),
-                [ProfileRelationType.likedBy]:icon("likedBy"),
-                [ProfileRelationType.mutual]:icon("mutual"),
-            })[profile.relationType]}
+        [ProfileRelationType.friend]:icon("friend"),
+        [ProfileRelationType.liked]:icon("liked"),
+        [ProfileRelationType.likedBy]:icon("likedBy"),
+        [ProfileRelationType.mutual]:icon("mutual"),
+    })[profile.relationType]}
         </div>` : ''}
-        ${/*<div class="travelling"></div>*/''}
-    </a>`;
+        ${/*<div class="travelling"></div>*/''}`}`;
 }
 
 export default (vars:{[p:string]:string}, state:{[k:string]:string})=>{
