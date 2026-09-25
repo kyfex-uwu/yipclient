@@ -258,7 +258,7 @@ export default (vars:{[k:string]:string})=> {
         ${()=>messages.value===undefined?'':html`
             ${()=>messages.value?.map(message=>html`
                 <div class="${`message-holder ${message.profile.id == self.value?.profile.id ? 'you' : ''}`}"><div class="message">
-                    ${sanitize(message.payload.type==="text" ? message.payload.content : message.payload.action)}
+                    ${sanitize(message.payload.type==="text" ? message.payload.content : message.payload.action,{newlineToBr:true})}
                 </div></div>
             `)}
         `}

@@ -41,13 +41,6 @@ Node.prototype.addEventListener = function (type, listener:EventListenerOrEventL
 addCss(`
 @import url('https://fonts.googleapis.com/css2?family=Glory:ital,wght@0,100..800;1,100..800&display=swap');
 
-@media (min-aspect-ratio: 3/4) {
-  #root{
-    aspect-ratio:3/4;
-    height:100vh;
-  }
-}
-
 body{
     background:black;
 }
@@ -61,7 +54,7 @@ body{
     display:flex;
     flex-direction:column;
     
-    font-size:140%;
+    font-size:4vw;
     
     --black:#2b2523;
     --white:#e9ded0;

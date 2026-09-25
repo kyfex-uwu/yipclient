@@ -2,7 +2,11 @@ import {token} from "./index.js";
 
 const baseURL = 'https://api.barq.app'; // use your own URL or environment variable
 
-export const fetchWithAuth = async <T>(
+export const fetchWithAuth = async <T extends {
+    headers:Headers
+    data: any
+    status: number
+}>(
     url: string,
     {
         method,
@@ -29,7 +33,11 @@ export const fetchWithAuth = async <T>(
         headers:{...headers, "Authorization":`Bearer ${token.value}`},
     });
 
-    return response.json();
+    return response.json().then(json=>{return{
+        data:json,
+        status:response.status,
+        headers:{...headers, "Authorization":`Bearer ${token.value}`}
+    }});
 };
 
 export default fetchWithAuth;

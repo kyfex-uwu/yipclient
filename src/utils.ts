@@ -1,8 +1,8 @@
 import {ArrowTemplate, html, reactive} from "@arrow-js/core";
 import {addCss} from "./index.js";
 import {decodeBlurHash} from "fast-blurhash";
-import {ref} from "arrowjs-aluminum";
-import {UploadedImageMinimalDto} from "./api.js";
+import {htmlAcceptor, Ref, ref} from "arrowjs-aluminum";
+import {ProfileSocialAccountDtoSocialNetwork, UploadedImageMinimalDto} from "./api.js";
 
 //--
 
@@ -75,10 +75,8 @@ export const imageModal = html`<div class="${
 </div>`
 
 export function getImageLink(image:UploadedImageMinimalDto|null|undefined, data:{width?:number|false}={}){
-    console.log(image)
     if(!image) return '';
-    return `https://assets.barq.app/image/${image.uuid}.${(image.mimeType??'image/jpeg').slice("image/".length)
-        }${data.width!==false ? `?width=${data.width??512}` : ''}`;
+    return `${image.url}${data.width!==false ? `?width=${data.width??512}` : ''}`;
 }
 export function openImage(image:UploadedImageMinimalDto|null|undefined){
     if(!image) return;
@@ -88,21 +86,21 @@ export function openImage(image:UploadedImageMinimalDto|null|undefined){
 export function getImage(image:UploadedImageMinimalDto|null|undefined, data:{width?: number|false, style?:string|(()=>string), clazz?:string|(()=>string), canExpand?:boolean}={},
                          insides?:ArrowTemplate){
 
-    let canvas:HTMLCanvasElement|undefined=undefined;
-    if(image?.blurHash){
-        const pixels = decodeBlurHash(image.blurHash, 32, 32);
-        canvas = document.createElement('canvas');
-        canvas.width=32;
-        canvas.height=32;
-        const ctx = canvas.getContext('2d')!;
-        const imageData = ctx.createImageData(32,32);
-        imageData.data.set(pixels);
-        ctx.putImageData(imageData, 0, 0);
-    }
+    // let canvas:HTMLCanvasElement|undefined=undefined;
+    // if(image?.blurHash){
+    //     const pixels = decodeBlurHash(image.blurHash, 32, 32);
+    //     canvas = document.createElement('canvas');
+    //     canvas.width=32;
+    //     canvas.height=32;
+    //     const ctx = canvas.getContext('2d')!;
+    //     const imageData = ctx.createImageData(32,32);
+    //     imageData.data.set(pixels);
+    //     ctx.putImageData(imageData, 0, 0);
+    // }
 
 
     return html`<span style="${data.style??""}" class="${`img ${data.clazz??""}`}"  @loadel="${(el:HTMLSpanElement)=>{
-            if(canvas) el.prepend(canvas);
+            // if(canvas) el.prepend(canvas);
         }}">
         <img src="${getImageLink(image, data)
         }" @click="${data.canExpand??true ? ()=> openImage(image) : undefined}">
@@ -113,9 +111,21 @@ export function getImage(image:UploadedImageMinimalDto|null|undefined, data:{wid
 //--
 
 const el = document.createElement("span");
-export function sanitize(text:string){
+export function sanitize(text:string, options:{
+    newlineToBr?:boolean,
+    encodeQuote?:boolean,
+}={}){
+    return html`‍${sanitizeText(text, options)}`;
+}
+export function sanitizeText(text:string, options:{
+    newlineToBr?:boolean,
+    encodeQuote?:boolean,
+}={}){
     el.textContent=text;
-    return el.innerHTML;
+    let sanitized = el.innerHTML;
+    if(options.newlineToBr) sanitized=sanitized.split("\n").join("<br>");
+    if(options.encodeQuote) sanitized=sanitized.split("\"").join("%22");
+    return sanitized;
 }
 
 //--
@@ -162,4 +172,29 @@ export async function requestFile(accept:string){
     fileInput.click();
 
     return await filePromise;
+}
+
+//--
+
+export function waitFor<T>(waiter:Promise<T>|Ref<T|undefined>, inner:(data:T)=>ArrowTemplate){
+    const data = waiter instanceof Ref ? waiter : ref<T|undefined>(undefined);
+    if(waiter instanceof Promise) waiter.then(v=>data.value=v);
+    return htmlAcceptor(loader=>html`${()=>data.value===undefined ? loader : inner(data.value)}`);
+}
+
+//--
+
+export const SocialMedia:{[k in ProfileSocialAccountDtoSocialNetwork]:string}={
+    "bluesky":"Bluesky",
+    "deviantArt":"DeviantArt",
+    "discord":"Discord",
+    "furAffinity":"FurAffinity",
+    "instagram":"Instagram",
+    "lastfm":"Lastfm",
+    "mastodon":"Mastodon",
+    "steam":"Steam",
+    "telegram":"Telegram",
+    "twitter":"Twitter",
+    "twitterAd":"Twitter (AD)",
+    "vrChat":"VRChat",
 }

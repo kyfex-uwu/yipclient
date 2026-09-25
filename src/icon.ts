@@ -69,9 +69,14 @@ addCss(`
         mask-mode: luminance;
         mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 2 2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23fff' fill='none' stroke-linecap='round' stroke-linejoin='round' stroke-width='.3' d='M.4 1.5h1.2'/%3E%3Cellipse fill='%23fff' rx='.15' cx='1' cy='.34'/%3E%3Cellipse fill='%23fff' rx='.15' cx='1' cy='1.65'/%3E%3Cpath fill='%23fff' d='M.45 1.5V.9a.5.5 180 0 1 1.1 0v.6'/%3E%3C/svg%3E");
     }
+    &.loader{
+        background: black;
+        mask-mode: luminance;
+        mask-image: url("data:image/svg+xml,%3Csvg viewBox='0.4 0.3 1.2 1.2' xmlns='http://www.w3.org/2000/svg' fill='%23fff'%3E%3Cpath stroke='%23fff' stroke-width='.1' stroke-linecap='round' stroke-linejoin='round' d='M.8 1.1c-.1.3.1.2.2.2s.3.1.2-.2-.3-.3-.4 0'%3E%3Canimate attributeName='opacity' values='0;1;1;1;1;0' dur='1s' repeatCount='indefinite'/%3E%3C/path%3E%3Cellipse cx='.8' cy='.85' rx='.13' ry='.18' transform='rotate(-25 .8 1.3)'%3E%3Canimate attributeName='opacity' values='1;0;1;1;1;1' dur='1s' repeatCount='indefinite'/%3E%3C/ellipse%3E%3Cellipse cx='.95' cy='.6' rx='.15' ry='.2' transform='rotate(-10 .95 1.3)'%3E%3Canimate attributeName='opacity' values='1;1;0;1;1;1' dur='1s' repeatCount='indefinite'/%3E%3C/ellipse%3E%3Cellipse cx='1.05' cy='.6' rx='.15' ry='.2' transform='rotate(10 1.05 1.3)'%3E%3Canimate attributeName='opacity' values='1;1;1;0;1;1' dur='1s' repeatCount='indefinite'/%3E%3C/ellipse%3E%3Cellipse cx='1.2' cy='.85' rx='.13' ry='.18' transform='rotate(25 1.2 1.3)'%3E%3Canimate attributeName='opacity' values='1;1;1;1;0;1' dur='1s' repeatCount='indefinite'/%3E%3C/ellipse%3E%3C/svg%3E");
+    }
 }
 `);
 
-type icon = "likedBy"|"liked"|"mutual"|"friend"|"send"|"boop"|"swipemore"|"camera"|"search"|"settings"|"notification"
+type icon = "likedBy"|"liked"|"mutual"|"friend"|"send"|"boop"|"swipemore"|"camera"|"search"|"settings"|"notification"|"loader"
 const icon = (type:icon)=>html`<span class="${`icon ${type}`}"></span>`;
 export default icon;
